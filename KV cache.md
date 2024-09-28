@@ -28,7 +28,7 @@ $$
 
 同时，在计算第二个attention时，token2的k是由token2的embedding与训练好的kw矩阵相乘得到的，token2的v是由token2的embedding与训练好的kv矩阵相乘得到的。于是K、V矩阵可以由之前KV cache缓存的token1的k、v向量加上token2的k、v向量拼接而成。下面是应用了KV cache后token2计算attention的过程。
 
-![the impact of KV cache](./images/the impact of KV cache.jpg)
+![the impact of KV cache](./images/KVcache_impact.jpg)
 
 在得到了attention2后进行解码可以得到token3，以此类推。
 
