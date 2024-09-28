@@ -20,7 +20,7 @@ attention(Q, K, V) = softmax(\frac{QK^T}{\sqrt{d_k}})V
 $$
 假设此时已经输入了n个tokens，每个token经过embedding后转换为一个对应的向量（1 x dim）。此时的Q（n x dim）是由n个embedding向量组成的矩阵和训练好的Qw矩阵相乘得到的，K（n x dim）也一样。将Q和K的转置相乘以得到包含各个token注意力关系的矩阵（比如某token1和token3关系紧密，于是矩阵的第三行第一列的值较大，由于mask机制的存在，计算时只会计算矩阵的下半区域，也即每个token只会与历史的tokens进行注意力的计算）。然后对矩阵每个元素除以d_k（由于LLM并行的机制，实际训练时会将dim均分为多个相等的dim_k，然后在k个模块上同时进行训练，最后将结果矩阵进行简单拼接），这一步是为了平衡数字分布，防止softmax后矩阵中某一行出现一个数据是99%，其他数据是0.xx%的情况。将矩阵进行softmax后再乘以V（V也是由embedding x 训练后得到的参数Vw计算得到的） ，我们计算得出了attention矩阵。下图是attention计算过程的示意图：
 
-![attention](D:\LLM_storage\images\attention.jpg)
+![attention](./images/attention.jpg)
 
 在下图中，第四个attention的计算只依赖于QK^T的最后一行，具体地，只依赖于第四个token的q向量与四个tokens的K向量和V向量。所以在大模型的推理阶段，不需要缓存q向量。这解释了KV cache名字的含义，只需缓存k向量和v向量。
 
@@ -28,7 +28,7 @@ $$
 
 同时，在计算第二个attention时，token2的k是由token2的embedding与训练好的kw矩阵相乘得到的，token2的v是由token2的embedding与训练好的kv矩阵相乘得到的。于是K、V矩阵可以由之前KV cache缓存的token1的k、v向量加上token2的k、v向量拼接而成。下面是应用了KV cache后token2计算attention的过程。
 
-![the impact of KV cache](D:\LLM_storage\images\the impact of KV cache.jpg)
+![the impact of KV cache](./images/the impact of KV cache.jpg)
 
 在得到了attention2后进行解码可以得到token3，以此类推。
 
