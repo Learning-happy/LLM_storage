@@ -24,7 +24,7 @@ $$
 
 在下图中，第四个attention的计算只依赖于QK^T的最后一行，具体地，只依赖于第四个token的q向量与四个tokens的K向量和V向量。所以在大模型的推理阶段，不需要缓存q向量。这解释了KV cache名字的含义，只需缓存k向量和v向量。
 
-![attention_analysis](D:\LLM_storage\images\attention_analysis.jpg)
+![attention_analysis](./images/attention_analysis.jpg)
 
 同时，在计算第二个attention时，token2的k是由token2的embedding与训练好的kw矩阵相乘得到的，token2的v是由token2的embedding与训练好的kv矩阵相乘得到的。于是K、V矩阵可以由之前KV cache缓存的token1的k、v向量加上token2的k、v向量拼接而成。下面是应用了KV cache后token2计算attention的过程。
 
